@@ -1,9 +1,10 @@
 ﻿using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Requests;
 using StartTemplateNew.Shared.Models.Dto.Services;
+using StartTemplateNew.Shared.Services.Core;
 using StartTemplateNew.Shared.Services.Models;
 
-namespace StartTemplateNew.Shared.Services.Core
+namespace StartTemplateNew.Shared.Services.Domain
 {
     public interface IServiceService : IService
     {

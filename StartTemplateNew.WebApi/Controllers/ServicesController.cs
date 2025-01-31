@@ -6,7 +6,7 @@ using StartTemplateNew.Shared.Helpers.Extensions;
 using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Requests;
 using StartTemplateNew.Shared.Models.Dto.Services;
-using StartTemplateNew.Shared.Services.Core;
+using StartTemplateNew.Shared.Services.Domain;
 using StartTemplateNew.Shared.Services.Factories;
 using StartTemplateNew.Shared.Services.Models;
 using StartTemplateNew.WebApi.Controllers.Base.ApiVersions;

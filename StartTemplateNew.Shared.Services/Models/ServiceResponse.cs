@@ -39,6 +39,12 @@ namespace StartTemplateNew.Shared.Services.Models
             get => Data is not null;
         }
 
+        public bool IsSuccessWithData
+        {
+            [MemberNotNullWhen(true, nameof(Data))]
+            get => IsSuccess && HasData;
+        }
+
         public Pagination? Pagination { get; set; }
 
         public bool HasPagination

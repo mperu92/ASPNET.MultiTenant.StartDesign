@@ -2,7 +2,14 @@
 
 namespace StartTemplateNew.Shared.Models.Dto.Requests
 {
-    public class CreateUpdateUserRequest : CreateUpdateUserFormRequest
+    public interface ICreateUpdateUserRequest
+    {
+        Guid Id { get; set; }
+        Guid? RoleId { get; set; }
+        string Password { get; set; }
+    }
+
+    public class CreateUpdateUserRequest : CreateUpdateUserFormRequest, ICreateUpdateUserRequest
     {
         [SetsRequiredMembers]
         public CreateUpdateUserRequest(string userName, string email, string password, string firstName, string lastName)
@@ -16,6 +23,7 @@ namespace StartTemplateNew.Shared.Models.Dto.Requests
         [SetsRequiredMembers]
         public CreateUpdateUserWithTenantRequest(string userName, string email, string password, string firstName, string lastName)
             : base(userName, email, password, firstName, lastName) { }
+
         public Guid? TenantId { get; set; }
     }
 }

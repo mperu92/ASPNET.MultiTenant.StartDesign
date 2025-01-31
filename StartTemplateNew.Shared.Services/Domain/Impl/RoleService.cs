@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StartTemplateNew.DAL.Entities.Identity;
-using StartTemplateNew.DAL.Repositories.Core;
 using StartTemplateNew.DAL.UnitOfWork.Core;
 using StartTemplateNew.Shared.Helpers;
 using StartTemplateNew.Shared.Helpers.Extensions;
@@ -10,7 +9,7 @@ using StartTemplateNew.Shared.Models.Dto.Identity;
 using StartTemplateNew.Shared.Models.Dto.Requests;
 using StartTemplateNew.Shared.Services.Models;
 
-namespace StartTemplateNew.Shared.Services.Core.Impl
+namespace StartTemplateNew.Shared.Services.Domain.Impl
 {
     public class RoleService : IRoleService
     {

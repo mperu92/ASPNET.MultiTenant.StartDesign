@@ -6,7 +6,7 @@ using StartTemplateNew.Shared.Providers;
 using StartTemplateNew.Shared.Services.Models;
 using System.Diagnostics.CodeAnalysis;
 
-namespace StartTemplateNew.Shared.Services.Core.Impl
+namespace StartTemplateNew.Shared.Services.Domain.Impl
 {
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
     internal class TokenService(ITokenProvider tokenProvider) : ITokenService

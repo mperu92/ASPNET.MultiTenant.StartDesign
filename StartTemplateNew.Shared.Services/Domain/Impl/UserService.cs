@@ -20,7 +20,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
-namespace StartTemplateNew.Shared.Services.Core.Impl
+namespace StartTemplateNew.Shared.Services.Domain.Impl
 {
     [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out")]
     public class UserService : IUserService
@@ -161,15 +161,15 @@ namespace StartTemplateNew.Shared.Services.Core.Impl
             }
         }
 
-        public async Task<ServiceResponse<EntityStateInfo>> CreateUpdateUserAsync(CreateUpdateUserWithTenantRequest request, CancellationToken cancellationToken = default)
+        public async Task<ServiceResponse<EntityStateInfo>> CreateUpdateUserAsync(ICreateUpdateUserRequest requestInt, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                UserEntity user = _mapper.Map<UserEntity>(request);
+                UserEntity user = _mapper.Map<UserEntity>(requestInt);
 
                 EntityStateInfo entityStateInfo;
-                if (request.Id != Guid.Empty)
+                if (requestInt.Id != Guid.Empty)
                 {
                     entityStateInfo = await UpdateUserAsync(user, cancellationToken).ConfigureAwait(false);
                     if (!entityStateInfo.Succeeded)
@@ -177,20 +177,19 @@ namespace StartTemplateNew.Shared.Services.Core.Impl
                 }
                 else
                 {
-                    entityStateInfo = await CreateUserAsync(user, request.Password, cancellationToken).ConfigureAwait(false);
+                    entityStateInfo = await CreateUserAsync(user, requestInt.Password, cancellationToken).ConfigureAwait(false);
                     if (!entityStateInfo.Succeeded)
                         return ServiceResponse<EntityStateInfo>.Error(entityStateInfo.Message);
                 }
-
                 await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
 
-                if (request.RoleId.HasValue)
+                if (requestInt.RoleId.HasValue)
                 {
-                    RoleEntity? role = await _roleManager.FindByIdAsync(request.RoleId.Value.ToString()).ConfigureAwait(false);
+                    RoleEntity? role = await _roleManager.FindByIdAsync(requestInt.RoleId.Value.ToString()).ConfigureAwait(false);
                     if (role is null)
-                        return ServiceResponse<EntityStateInfo>.Error($"Role with ID {request.RoleId} not found.");
+                        return ServiceResponse<EntityStateInfo>.Error($"Role with ID {requestInt.RoleId} not found.");
                     if (string.IsNullOrWhiteSpace(role.Name))
-                        return ServiceResponse<EntityStateInfo>.Error($"Role with ID {request.RoleId} has no name.");
+                        return ServiceResponse<EntityStateInfo>.Error($"Role with ID {requestInt.RoleId} has no name.");
 
                     if (!await _userManager.IsInRoleAsync(user, role.Name).ConfigureAwait(false))
                     {
@@ -205,7 +204,7 @@ namespace StartTemplateNew.Shared.Services.Core.Impl
             }
             catch (Exception ex)
             {
-                string action = request.Id != Guid.Empty ? "updating" : "creating";
+                string action = requestInt.Id != Guid.Empty ? "updating" : "creating";
                 return ServiceResponse<EntityStateInfo>.Error($"Error {action} user.\n{ex.GetFullMessage()}");
             }
         }

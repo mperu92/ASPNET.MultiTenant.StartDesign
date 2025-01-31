@@ -6,7 +6,7 @@ using StartTemplateNew.Shared.Helpers.Extensions;
 using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Products;
 using StartTemplateNew.Shared.Models.Dto.Requests;
-using StartTemplateNew.Shared.Services.Core;
+using StartTemplateNew.Shared.Services.Domain;
 using StartTemplateNew.Shared.Services.Factories;
 using StartTemplateNew.Shared.Services.Models;
 using StartTemplateNew.WebApi.Controllers.Base.ApiVersions;
@@ -29,7 +29,7 @@ namespace StartTemplateNew.WebApi.Controllers
         {
             try
             {
-                ServiceResponse<ICollection<Product>> response = await _productService.GetProductsAsync(cancellationToken).ConfigureAwait(false);
+                ServiceResponse<ICollection<Product>> response = await _productService.GetProductsAsync(new GetProductsRequest(), cancellationToken).ConfigureAwait(false);
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
 

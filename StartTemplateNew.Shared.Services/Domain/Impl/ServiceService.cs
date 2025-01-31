@@ -13,7 +13,7 @@ using StartTemplateNew.Shared.Models.Dto.Services;
 using StartTemplateNew.Shared.Services.Models;
 using System.Linq.Expressions;
 
-namespace StartTemplateNew.Shared.Services.Core.Impl
+namespace StartTemplateNew.Shared.Services.Domain.Impl
 {
     public class ServiceService : IServiceService
     {

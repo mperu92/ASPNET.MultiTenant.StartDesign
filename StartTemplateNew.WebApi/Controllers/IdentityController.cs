@@ -6,7 +6,7 @@ using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Base.Responses;
 using StartTemplateNew.Shared.Models.Dto.Identity;
 using StartTemplateNew.Shared.Models.Dto.Requests;
-using StartTemplateNew.Shared.Services.Core;
+using StartTemplateNew.Shared.Services.Domain;
 using StartTemplateNew.Shared.Services.Factories;
 using StartTemplateNew.Shared.Services.Models;
 using StartTemplateNew.WebApi.Controllers.Base.ApiVersions;
@@ -36,7 +36,7 @@ namespace StartTemplateNew.WebApi.Controllers
 
             try
             {
-                ServiceResponse<EntityStateInfo> response = await _userService.CreateUpdateUserAsync(request, cancellationToken).ConfigureAwait(false);
+                ServiceResponse<EntityStateInfo> response = await _userService.CreateUpdateUserAsync(requestInt: request, cancellationToken).ConfigureAwait(false);
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
 
@@ -59,7 +59,7 @@ namespace StartTemplateNew.WebApi.Controllers
 
             try
             {
-                ServiceResponse<EntityStateInfo> response = await _userService.CreateUpdateUserAsync(request, cancellationToken).ConfigureAwait(false);
+                ServiceResponse<EntityStateInfo> response = await _userService.CreateUpdateUserAsync(requestInt: request, cancellationToken).ConfigureAwait(false);
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
 
