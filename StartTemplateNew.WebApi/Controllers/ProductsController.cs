@@ -94,5 +94,23 @@ namespace StartTemplateNew.WebApi.Controllers
                 return BadRequest(ex.GetFullMessage());
             }
         }
+
+        [Authorize(Roles = "SysAdmin,TenantAdmin")]
+        [HttpPost("set-user-prod")]
+        public async Task<IActionResult> SetUserProduct([FromBody] SetUserProductRequest request, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                //ServiceResponse<EntityStateInfo> response = await _productService.SetUserProductAsync(request, cancellationToken).ConfigureAwait(false);
+                //if (!response.IsSuccess)
+                //    return BadRequest(response.Message);
+                //return Ok(response.Data);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.GetFullMessage());
+            }
+        }
     }
 }

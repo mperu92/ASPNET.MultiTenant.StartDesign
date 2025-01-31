@@ -15,6 +15,7 @@ namespace StartTemplateNew.DAL.Contexts
         public DbSet<TenantEntity> Tenants { get; set; } = default!;
         public DbSet<TenantServiceEntity> TenantServices { get; set; } = default!;
         public DbSet<TenantProductEntity> TenantProducts { get; set; } = default!;
+        public DbSet<UserProductEntity> UserProducts { get; set; } = default!;
 
         public DbSet<ServiceEntity> Services { get; set; } = default!;
         public DbSet<ProductEntity> Products { get; set; } = default!;

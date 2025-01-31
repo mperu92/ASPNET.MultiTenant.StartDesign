@@ -32,17 +32,18 @@ namespace StartTemplateNew.DAL.Entities
         public DateTimeOffset CreatedAt { get; set; }
         [ForeignKey(nameof(CreatedBy))]
         public Guid CreatedById { get; set; }
-        public UserEntity CreatedBy { get; set; } = default!;
+        public virtual UserEntity CreatedBy { get; set; } = default!;
 
-        public UserEntity? UpdatedBy { get; set; }
+        public virtual UserEntity? UpdatedBy { get; set; }
         [ForeignKey(nameof(UpdatedBy))]
         public Guid? UpdatedById { get; set; }
         public DateTimeOffset? UpdatedAt { get; set; }
 
         public bool IsDeleted { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
-        public UserEntity? DeletedBy { get; set; }
+        [ForeignKey(nameof(DeletedBy))]
         public Guid? DeletedById { get; set; }
+        public virtual UserEntity? DeletedBy { get; set; }
 
         public virtual ICollection<UserEntity> Users { get; set; } = new HashSet<UserEntity>();
 

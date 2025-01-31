@@ -59,5 +59,6 @@ namespace StartTemplateNew.DAL.Entities
         public bool IsDeleted { get; set; }
 
         public virtual ICollection<TenantProductEntity> TenantProducts { get; set; } = new HashSet<TenantProductEntity>();
+        public virtual ICollection<UserProductEntity> UserProducts { get; set; } = new HashSet<UserProductEntity>();
     }
 }

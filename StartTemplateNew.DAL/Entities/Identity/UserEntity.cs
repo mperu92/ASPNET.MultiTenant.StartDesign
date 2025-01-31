@@ -15,6 +15,7 @@ namespace StartTemplateNew.DAL.Entities.Identity
             UserClaims = new HashSet<UserClaimEntity>();
             UserLogins = new HashSet<UserLoginEntity>();
             UserTokens = new HashSet<UserTokenEntity>();
+            UserProducts = new HashSet<UserProductEntity>();
         }
 
         public string? FirstName { get; set; }
@@ -24,6 +25,7 @@ namespace StartTemplateNew.DAL.Entities.Identity
         public virtual ICollection<UserClaimEntity> UserClaims { get; set; }
         public virtual ICollection<UserLoginEntity> UserLogins { get; set; }
         public virtual ICollection<UserTokenEntity> UserTokens { get; set; }
+        public virtual ICollection<UserProductEntity> UserProducts { get; set; }
 
         public Guid? TenantId { get; set; }
         public virtual TenantEntity? Tenant { get; set; }

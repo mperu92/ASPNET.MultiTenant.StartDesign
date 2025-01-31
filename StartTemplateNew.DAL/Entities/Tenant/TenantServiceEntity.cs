@@ -19,20 +19,20 @@ namespace StartTemplateNew.DAL.Entities.Tenant
             ServiceId = entityId;
         }
 
-        public TenantEntity? Tenant { get; set; }
+        public virtual TenantEntity? Tenant { get; set; }
         public Guid? TenantId { get; set; }
 
-        public ServiceEntity? Service { get; set; }
+        public virtual ServiceEntity? Service { get; set; }
         public Guid? ServiceId { get; set; }
 
         public DateTimeOffset? ActivationDate { get; set; }
         [ForeignKey(nameof(ActivationSetBy))]
         public Guid? ActivationSetById { get; set; }
-        public UserEntity? ActivationSetBy { get; set; }
+        public virtual UserEntity? ActivationSetBy { get; set; }
 
         public DateTimeOffset? ExpirationDate { get; set; }
         [ForeignKey(nameof(ExpirationSetBy))]
         public Guid? ExpirationSetById { get; set; }
-        public UserEntity? ExpirationSetBy { get; set; }
+        public virtual UserEntity? ExpirationSetBy { get; set; }
     }
 }
