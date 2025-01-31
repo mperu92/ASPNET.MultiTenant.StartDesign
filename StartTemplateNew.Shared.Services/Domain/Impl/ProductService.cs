@@ -43,6 +43,23 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
             _tenantProductRepo = _unitOfWork.GetTenantedRepository<TenantProductEntity, int, TenantEntity, Guid, UserEntity, Guid>();
         }
 
+        public async Task<ServiceResponse<Product?>> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                ProductEntity? product = await _productRepo.GetByIdAsync(productId, cancellationToken).ConfigureAwait(false);
+                if (product is null)
+                    return ServiceResponse<Product?>.Error("Product not found.");
+
+                return ServiceResponse<Product?>.Success(_mapper.Map<Product>(product));
+            }
+            catch (Exception ex)
+            {
+                return ServiceResponse<Product?>.Error($"Error getting product.\n{ex.GetFullMessage()}");
+            }
+        }
+
         public async Task<ServiceResponse<ICollection<Product>>> GetProductsAsync(GetProductsRequest request, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();

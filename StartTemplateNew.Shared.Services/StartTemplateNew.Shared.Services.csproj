@@ -11,8 +11,4 @@
     <ProjectReference Include="..\StartTemplateNew.Shared\StartTemplateNew.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Application\" />
-  </ItemGroup>
-
 </Project>

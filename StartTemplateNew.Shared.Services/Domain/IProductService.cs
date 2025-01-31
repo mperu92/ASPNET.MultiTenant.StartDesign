@@ -8,6 +8,7 @@ namespace StartTemplateNew.Shared.Services.Domain
 {
     public interface IProductService : IService
     {
+        Task<ServiceResponse<Product?>> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken = default);
         Task<ServiceResponse<ICollection<Product>>> GetProductsAsync(GetProductsRequest request, CancellationToken cancellationToken = default);
         Task<ServiceResponse<EntityStateInfo>> CreateUpdateProductAsync(CreateUpdateProductRequest request, CancellationToken cancellationToken = default);
         Task<ServiceResponse<EntityStateInfo>> DeleteProductAsync(Guid id, CancellationToken cancellationToken = default);

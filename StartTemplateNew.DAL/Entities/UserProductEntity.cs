@@ -7,6 +7,20 @@ namespace StartTemplateNew.DAL.Entities
 {
     public class UserProductEntity : IKeyedEntity<int>, IKeyedCreateUpdateInfoEntity<UserEntity>, IKeyedDeleteInfoEntity<UserEntity>, IKeyedExpiringInfoEntity<UserEntity>
     {
+        public UserProductEntity() { }
+
+        public UserProductEntity(Guid userId, Guid productId)
+        {
+            UserId = userId;
+            ProductId = productId;
+        }
+
+        public UserProductEntity(UserEntity user, ProductEntity product)
+        {
+            User = user;
+            Product = product;
+        }
+
         public int Id { get; set; }
 
         [ForeignKey(nameof(User))]

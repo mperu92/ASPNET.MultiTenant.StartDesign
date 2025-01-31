@@ -6,6 +6,7 @@ using StartTemplateNew.Shared.Helpers.Extensions;
 using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Products;
 using StartTemplateNew.Shared.Models.Dto.Requests;
+using StartTemplateNew.Shared.Services.Application;
 using StartTemplateNew.Shared.Services.Domain;
 using StartTemplateNew.Shared.Services.Factories;
 using StartTemplateNew.Shared.Services.Models;
@@ -17,11 +18,13 @@ namespace StartTemplateNew.WebApi.Controllers
     public class ProductsController : V1ApiController<ProductsController>
     {
         private readonly IProductService _productService;
+        private readonly ISetUserProductService _setUserProductService;
 
         public ProductsController(ILogger<ProductsController> logger, IServiceFactory serviceFactory, IOptionsMonitor<AppSettings> options)
             : base(logger, serviceFactory, options)
         {
             _productService = GetService<IProductService>();
+            _setUserProductService = GetService<ISetUserProductService>();
         }
 
         [HttpGet("all")]
@@ -101,11 +104,11 @@ namespace StartTemplateNew.WebApi.Controllers
         {
             try
             {
-                //ServiceResponse<EntityStateInfo> response = await _productService.SetUserProductAsync(request, cancellationToken).ConfigureAwait(false);
-                //if (!response.IsSuccess)
-                //    return BadRequest(response.Message);
-                //return Ok(response.Data);
-                return Ok();
+                ServiceResponse response = await _setUserProductService.SetUserProductAsync(request, cancellationToken).ConfigureAwait(false);
+                if (!response.IsSuccess)
+                    return BadRequest(response.Message);
+
+                return Ok(response.Message);
             }
             catch (Exception ex)
             {

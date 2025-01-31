@@ -1,4 +1,5 @@
 ﻿using StartTemplateNew.Shared.Models.Dto.Base;
+using StartTemplateNew.Shared.Models.Dto.Products;
 using System.Diagnostics.CodeAnalysis;
 
 namespace StartTemplateNew.Shared.Models.Dto.Identity
@@ -18,5 +19,6 @@ namespace StartTemplateNew.Shared.Models.Dto.Identity
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
+        public virtual ICollection<UserProduct> UserProducts { get; set; } = new HashSet<UserProduct>();
     }
 }

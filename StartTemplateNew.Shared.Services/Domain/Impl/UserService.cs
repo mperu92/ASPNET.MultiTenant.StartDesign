@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using StartTemplateNew.DAL.Entities;
 using StartTemplateNew.DAL.Entities.Identity;
 using StartTemplateNew.DAL.Repositories.Core;
+using StartTemplateNew.DAL.Repositories.Core.Base;
 using StartTemplateNew.DAL.Repositories.Helpers;
 using StartTemplateNew.DAL.Repositories.Models;
 using StartTemplateNew.DAL.TenantUserProvider.Helpers.Const;
@@ -14,6 +16,7 @@ using StartTemplateNew.Shared.Helpers.Extensions;
 using StartTemplateNew.Shared.Models.Dto;
 using StartTemplateNew.Shared.Models.Dto.Base.Requests;
 using StartTemplateNew.Shared.Models.Dto.Identity;
+using StartTemplateNew.Shared.Models.Dto.Products;
 using StartTemplateNew.Shared.Models.Dto.Requests;
 using StartTemplateNew.Shared.Services.Models;
 using System.Diagnostics.CodeAnalysis;
@@ -32,6 +35,7 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
         private readonly SignInManager<UserEntity> _signInManager;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        private readonly IRepository<UserProductEntity, int> _userProductRepository;
 
         public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, UserManager<UserEntity> userManager, RoleManager<RoleEntity> roleManager, SignInManager<UserEntity> signInManager, IMapper mapper)
         {
@@ -42,6 +46,24 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _userRepository = unitOfWork.GetTenantedRepoImpl<IUserRepository>();
+            _userProductRepository = unitOfWork.GetRepository<UserProductEntity, int>();
+        }
+
+        public async Task<ServiceResponse<User?>> GetUserByIdAsync(Guid userId, ICollection<Expression<Func<UserEntity, object>>>? includes = null, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                UserEntity? user = await _userRepository.GetByFilterAsync(x => x.Id.Equals(userId), includes: includes, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (user is null)
+                    return ServiceResponse<User?>.Error($"User with ID {userId} not found.");
+
+                return ServiceResponse<User?>.Success(_mapper.Map<User>(user));
+            }
+            catch (Exception ex)
+            {
+                return ServiceResponse<User?>.Error($"Error getting user.\n{ex.GetFullMessage()}");
+            }
         }
 
         public async Task<ServiceResponse<ICollection<User>>> GetUsersAsync(GetUsersRequest request, CancellationToken cancellationToken = default)
@@ -341,6 +363,23 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
             catch (Exception ex)
             {
                 return ServiceResponse.Error($"Error signing out.\n{ex.GetFullMessage()}");
+            }
+        }
+
+        public async Task<ServiceResponse> SetUserProductAsync(UserEntity user, ProductEntity product, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                UserProductEntity userProduct = new(user, product);
+
+                await _userProductRepository.AddAsync(userProduct, cancellationToken);
+                await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
+                return ServiceResponse.Success("User product set successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ServiceResponse.Error($"Error setting user product.\n{ex.GetFullMessage()}");
             }
         }
     }
