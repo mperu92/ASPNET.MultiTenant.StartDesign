@@ -12,8 +12,11 @@ using StartTemplateNew.Shared.Exceptions;
 using StartTemplateNew.Shared.Models;
 using StartTemplateNew.Shared.Services;
 using StartTemplateNew.WebApi;
+using StartTemplateNew.Shared.Logging.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilogLogging();
 
 // Add services to the container.
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));

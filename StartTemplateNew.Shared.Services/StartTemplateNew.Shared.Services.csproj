@@ -11,4 +11,8 @@
     <ProjectReference Include="..\StartTemplateNew.Shared\StartTemplateNew.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>

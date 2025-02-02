@@ -26,6 +26,7 @@ namespace StartTemplateNew.DAL.Contexts
 
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+
             #region identity
             builder.Entity<UserRoleEntity>(builder =>
             {

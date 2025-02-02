@@ -5,7 +5,6 @@ using StartTemplateNew.DAL.Entities.Identity;
 using StartTemplateNew.DAL.Entities.Tenant;
 using StartTemplateNew.DAL.Repositories.Core;
 using StartTemplateNew.DAL.Repositories.Core.Base;
-using StartTemplateNew.DAL.Repositories.Core.Impl;
 using StartTemplateNew.DAL.Repositories.Helpers;
 using StartTemplateNew.DAL.Repositories.Helpers.Tenant;
 using StartTemplateNew.DAL.Repositories.Models;
@@ -78,13 +77,20 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
                     }
                 }
 
+                QueryOrderable<ProductEntity>? orderable = null;
+                if (request.HasOrder)
+                {
+                    Expression<Func<ProductEntity, object>> orderExpression = OrderingHelper<ProductEntity>.CreateExpressionFromOrderFieldString(request.OrderField);
+                    orderable = new(orderExpression, request.IsAscending);
+                }
+
                 ICollection<Expression<Func<ProductEntity, object>>> includes =
                 [
                     x => x.Service
                 ];
 
                 QueryTotalCountPair<ProductEntity> queryResp =
-                    await _productRepo.GetAllWithCountAsync(filter, includes: includes, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await _productRepo.GetAllWithCountAsync(filter, includes: includes, queryOrderable: orderable, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 IQueryable<ProductEntity> prdsQuery = queryResp.Query;
                 ICollection<ProductEntity> prdsList = await prdsQuery.ToListAsync(cancellationToken).ConfigureAwait(false);

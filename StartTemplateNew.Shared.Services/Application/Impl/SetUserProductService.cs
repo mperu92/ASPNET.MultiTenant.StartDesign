@@ -1,96 +1,58 @@
 ﻿using AutoMapper;
-using StartTemplateNew.DAL.Entities;
-using StartTemplateNew.DAL.Entities.Identity;
+using Microsoft.Extensions.Logging;
 using StartTemplateNew.Shared.Helpers.Extensions;
-using StartTemplateNew.Shared.Models;
-using StartTemplateNew.Shared.Models.Dto.Identity;
-using StartTemplateNew.Shared.Models.Dto.Products;
 using StartTemplateNew.Shared.Models.Dto.Requests;
+using StartTemplateNew.Shared.Services.Application.Helpers.SetUser;
 using StartTemplateNew.Shared.Services.Domain;
 using StartTemplateNew.Shared.Services.Extensions;
 using StartTemplateNew.Shared.Services.Models;
-using System.Linq.Expressions;
+using StartTemplateNew.Shared.Services.Models.States;
 
 namespace StartTemplateNew.Shared.Services.Application.Impl
 {
     public class SetUserProductService : ISetUserProductService
     {
+        private readonly ILogger<SetUserProductService> _logger;
         private readonly IUserService _userService;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public SetUserProductService(IMapper mapper, IUserService userService, IProductService productService)
+        public SetUserProductService(ILogger<SetUserProductService> logger, IMapper mapper, IUserService userService, IProductService productService)
         {
+            _logger = logger;
             _mapper = mapper;
             _userService = userService;
             _productService = productService;
         }
 
-        private sealed class SetUserContext
-        {
-            public User User { get; set; } = default!;
-            public Product Product { get; set; } = default!;
-            public UserEntity UserEntity { get; set; } = default!;
-            public ProductEntity ProductEntity { get; set; } = default!;
-        }
-
+        /// <summary>
+        /// Implements ROP pattern to set a product for a user, ensuring that always a response is returned.
+        /// </summary>
+        /// <param name="request">The client json request</param>
+        /// <param name="cancellationToken">The cancellation token</param>
+        /// <returns>A dataless service response that notices what occurred</returns>
         public async Task<ServiceResponse> SetUserProductAsync(SetUserProductRequest request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Starting SetUserProductAsync for UserId: '{UserId}', ProductId: '{ProductId}'", request.UserId, request.ProductId);
+
             try
             {
                 SetUserContext context = new();
 
-                return await RetrieveAndValidateUserAsync(request.UserId, cancellationToken)
+                return await _userService
+                    .RetrieveAndValidateUserAsync(request.UserId, _logger, cancellationToken)
                     .Meanwhile(user => context.User = user)
-                    .Continue(_ => RetrieveAndValidateProductAsync(request.ProductId, cancellationToken).Meanwhile(prod => context.Product = prod))
-                    .Continue(_ => MapToEntities(context))
-                    .EndsWithNoValue(_ => SetUserProductAsync(context.UserEntity, context.ProductEntity, cancellationToken))
+                    .Continue(_ => _productService.RetrieveAndValidateProductAsync(request.ProductId, _logger, cancellationToken)
+                        .Meanwhile(prod => context.Product = prod))
+                    .Continue(_ => context.MapToEntities(_mapper, _logger))
+                    .EndsWithNoValue(_ => _userService.SetUserProductAsync(context.UserEntity, context.ProductEntity, request.ExpirationDate, _logger, cancellationToken))
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error in SetUserProductAsync: {Message}", ex.Message);
                 return ServiceResponse.Error(ex.GetFullMessage());
             }
-        }
-
-        private async Task<ServiceResponse<User>> RetrieveAndValidateUserAsync(Guid userId, CancellationToken cancellationToken)
-        {
-            ICollection<Expression<Func<UserEntity, object>>> includes =
-            [
-                i => i.UserProducts.Where(p => !p.ExpirationDate.HasValue || p.ExpirationDate.Value > DateTimeOffset.Now)
-            ];
-
-            ServiceResponse<User?> userResp = await _userService.GetUserByIdAsync(userId, includes, cancellationToken).ConfigureAwait(false);
-            if (userResp.IsError)
-                return ServiceResponse<User>.Error($"Error retrieving user: {userResp.Message}");
-            if (!userResp.HasData)
-                return ServiceResponse<User>.Error($"User with id '{userId}' not found");
-
-            return userResp!;
-        }
-
-        private async Task<ServiceResponse<Product>> RetrieveAndValidateProductAsync(Guid productId, CancellationToken cancellationToken)
-        {
-            ServiceResponse<Product?> productResp = await _productService.GetProductByIdAsync(productId, cancellationToken).ConfigureAwait(false);
-            if (productResp.IsError)
-                return ServiceResponse<Product>.Error(productResp.Message);
-            if (!productResp.HasData)
-                return ServiceResponse<Product>.Error($"Error retrieving product: {productResp.Message}");
-
-            return productResp!;
-        }
-
-        private Task<ServiceResponse<Unit>> MapToEntities(SetUserContext context)
-        {
-            context.UserEntity = _mapper.Map<UserEntity>(context.User);
-            context.ProductEntity = _mapper.Map<ProductEntity>(context.Product);
-
-            return Task.FromResult(ServiceResponse<Unit>.Success(Unit.Value));
-        }
-
-        private async Task<ServiceResponse> SetUserProductAsync(UserEntity userEntity, ProductEntity productEntity, CancellationToken cancellationToken)
-        {
-            return await _userService.SetUserProductAsync(userEntity, productEntity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

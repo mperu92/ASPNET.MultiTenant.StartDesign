@@ -27,12 +27,12 @@ namespace StartTemplateNew.WebApi.Controllers
             _setUserProductService = GetService<ISetUserProductService>();
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetProducts(CancellationToken cancellationToken = default)
+        [HttpPost("all")]
+        public async Task<IActionResult> GetProducts([FromBody] GetProductsRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                ServiceResponse<ICollection<Product>> response = await _productService.GetProductsAsync(new GetProductsRequest(), cancellationToken).ConfigureAwait(false);
+                ServiceResponse<ICollection<Product>> response = await _productService.GetProductsAsync(request, cancellationToken).ConfigureAwait(false);
                 if (!response.IsSuccess)
                     return BadRequest(response.Message);
 

@@ -19,6 +19,6 @@ namespace StartTemplateNew.Shared.Services.Domain
         Task<ServiceResponse<EntityStateInfo>> DeleteUserAsync(Guid userId, CancellationToken cancellationToken = default);
         Task<ServiceResponse> SignInAsync(string userName, string password, bool rememberMe, CancellationToken cancellationToken = default);
         Task<ServiceResponse> SignOutAsync(CancellationToken cancellationToken = default);
-        Task<ServiceResponse> SetUserProductAsync(UserEntity user, ProductEntity product, CancellationToken cancellationToken = default);
+        Task<ServiceResponse> SetUserProductAsync(UserEntity user, ProductEntity product, DateTimeOffset? expirationDate = null, CancellationToken cancellationToken = default);
     }
 }

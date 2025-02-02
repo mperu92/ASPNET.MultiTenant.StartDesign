@@ -15,10 +15,25 @@ namespace StartTemplateNew.DAL.Entities
             ProductId = productId;
         }
 
+        public UserProductEntity(Guid userId, Guid productId, DateTimeOffset? expirationDate)
+        {
+            UserId = userId;
+            ProductId = productId;
+            ExpirationDate = expirationDate;
+        }
+
         public UserProductEntity(UserEntity user, ProductEntity product)
         {
             User = user;
             Product = product;
+        }
+
+
+        public UserProductEntity(UserEntity user, ProductEntity product, DateTimeOffset? expirationDate)
+        {
+            User = user;
+            Product = product;
+            ExpirationDate = expirationDate;
         }
 
         public int Id { get; set; }

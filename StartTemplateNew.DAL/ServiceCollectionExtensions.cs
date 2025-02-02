@@ -12,6 +12,7 @@ namespace StartTemplateNew.DAL
             {
                 options.UseLazyLoadingProxies(useLazyLoadingProxies);
                 options.UseSqlServer(connectionString);
+                options.EnableSensitiveDataLogging();
             }, serviceLifetime);
 
             return services;

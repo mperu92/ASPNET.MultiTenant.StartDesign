@@ -35,7 +35,7 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
         private readonly SignInManager<UserEntity> _signInManager;
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
-        private readonly IRepository<UserProductEntity, int> _userProductRepository;
+        private readonly IClaimedRepository<UserProductEntity, int, UserEntity, Guid> _userProductRepository;
 
         public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, UserManager<UserEntity> userManager, RoleManager<RoleEntity> roleManager, SignInManager<UserEntity> signInManager, IMapper mapper)
         {
@@ -46,7 +46,7 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _userRepository = unitOfWork.GetTenantedRepoImpl<IUserRepository>();
-            _userProductRepository = unitOfWork.GetRepository<UserProductEntity, int>();
+            _userProductRepository = unitOfWork.GetClaimedRepository<UserProductEntity, int, UserEntity, Guid>();
         }
 
         public async Task<ServiceResponse<User?>> GetUserByIdAsync(Guid userId, ICollection<Expression<Func<UserEntity, object>>>? includes = null, CancellationToken cancellationToken = default)
@@ -366,12 +366,12 @@ namespace StartTemplateNew.Shared.Services.Domain.Impl
             }
         }
 
-        public async Task<ServiceResponse> SetUserProductAsync(UserEntity user, ProductEntity product, CancellationToken cancellationToken = default)
+        public async Task<ServiceResponse> SetUserProductAsync(UserEntity user, ProductEntity product, DateTimeOffset? expirationDate = null, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
-                UserProductEntity userProduct = new(user, product);
+                UserProductEntity userProduct = new(user.Id, product.Id, expirationDate);
 
                 await _userProductRepository.AddAsync(userProduct, cancellationToken);
                 await _unitOfWork.CommitAsync(cancellationToken).ConfigureAwait(false);
